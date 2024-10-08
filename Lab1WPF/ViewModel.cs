@@ -224,13 +224,13 @@ namespace Lab1WPF
             {
                 using (StreamWriter writer = new StreamWriter(saveFileDialog.FileName))
                 {
-                    writer.WriteLine($"{Function},{Start},{End}");
+                    writer.WriteLine($"{Function};{Start};{End}");
 
                     if (Points != null && Points.Count > 0)
                     {
                         foreach (var point in Points)
                         {
-                            writer.WriteLine($"{point.X},{point.Y}");
+                            writer.WriteLine($"{point.X};{point.Y}");
                         }
                     }
                     else
@@ -241,6 +241,7 @@ namespace Lab1WPF
             }
         }
 
+        // Импорт данных из CSV
         public void ImportFromFile()
         {
             OpenFileDialog openFileDialog = new OpenFileDialog
@@ -250,41 +251,112 @@ namespace Lab1WPF
 
             if (openFileDialog.ShowDialog() == true)
             {
-                Points.Clear();
+                Points.Clear(); // Очищаем предыдущие точки
 
                 using (StreamReader reader = new StreamReader(openFileDialog.FileName))
                 {
-                    string line;
-                    bool isFirstLine = true;
+                    string line = reader.ReadLine(); // Читаем первую строку
 
-                    while ((line = reader.ReadLine()) != null)
+                    if (line == null)
                     {
-                        var parts = line.Split(',');
+                        MessageBox.Show("Файл пустой.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;
+                    }
 
-                        if (isFirstLine && parts.Length == 3)
-                        {
-                            isFirstLine = false;
-                            continue;
-                        }
+                    var parts = line.Split(';');
 
-                        if (parts.Length == 2 && double.TryParse(parts[0], out double x) && double.TryParse(parts[1], out double y))
-                        {
-                            Points.Add(new ObservablePoint(x, y));
-                        }
+                    if (parts.Length == 3 && double.TryParse(parts[1], out double start) && double.TryParse(parts[2], out double end))
+                    {
+                        // Обрабатываем файл как файл с метаданными
+                        ImportFileWithMetadata(reader, parts[0], start, end);
+                    }
+                    else if (parts.Length == 2 && double.TryParse(parts[0], out double x) && double.TryParse(parts[1], out double y))
+                    {
+                        // Обрабатываем файл как файл с набором точек
+                        ImportFileWithPoints(reader, x, y);
+                    }
+                    else
+                    {
+                        MessageBox.Show("Ошибка в формате данных. Проверьте файл.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
                     }
                 }
 
-                Series = new ISeries[]
-                {
-                    new LineSeries<ObservablePoint>
-                    {
-                        Values = Points.ToArray(),
-                        Fill = null,
-                        GeometrySize = 0,
-                        LineSmoothness = 0
-                    }
-                };
+                // Обновляем график после импорта
+                UpdateChart();
             }
         }
+
+        // Функция для обработки файла с метаданными (функция, начало и конец)
+        private void ImportFileWithMetadata(StreamReader reader, string function, double start, double end)
+        {
+            Function = function;
+            Start = start;
+            End = end;
+
+            // Очищаем точки перед генерацией новых данных
+            Points.Clear();
+
+            // Генерация данных на основе функции, начала и конца
+            var generatedPoints = GenerateData(Function);
+            foreach (var point in generatedPoints)
+            {
+                Points.Add(point);
+            }
+
+            // Обновляем данные для Series
+            Series = new ISeries[]
+            {
+        new LineSeries<ObservablePoint>
+        {
+            Values = Points.ToArray(),
+            Fill = null,
+            GeometrySize = 0,
+            LineSmoothness = 0
+        }
+            };
+
+            // Обновляем график
+            OnPropertyChanged(nameof(Series));
+        }
+
+        // Функция для обработки файла с набором точек
+        private void ImportFileWithPoints(StreamReader reader, double firstX, double firstY)
+        {
+            // Добавляем первую точку
+            Points.Add(new ObservablePoint(firstX, firstY));
+
+            string line;
+            while ((line = reader.ReadLine()) != null)
+            {
+                var parts = line.Split(';');
+                if (parts.Length == 2 && double.TryParse(parts[0], out double x) && double.TryParse(parts[1], out double y))
+                {
+                    Points.Add(new ObservablePoint(x, y));
+                }
+                else
+                {
+                    MessageBox.Show("Ошибка в формате данных в строке: " + line, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return; // Останавливаем импорт при ошибке
+                }
+            }
+
+            // Обновляем данные для Series
+            Series = new ISeries[]
+            {
+        new LineSeries<ObservablePoint>
+        {
+            Values = Points.ToArray(),
+            Fill = null,
+            GeometrySize = 0,
+            LineSmoothness = 0
+        }
+            };
+
+            // Обновляем график
+            OnPropertyChanged(nameof(Series));
+        }
+
+
+
     }
 }
