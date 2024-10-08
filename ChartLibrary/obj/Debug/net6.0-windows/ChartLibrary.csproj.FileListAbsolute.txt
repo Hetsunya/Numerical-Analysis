@@ -1,0 +1,13 @@
+C:\Users\Hetsu\Desktop\Numerical-Analysis\ChartLibrary\obj\Debug\net6.0-windows\ChartLibrary.csproj.AssemblyReference.cache
+C:\Users\Hetsu\Desktop\Numerical-Analysis\ChartLibrary\obj\Debug\net6.0-windows\ChartLibrary.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Hetsu\Desktop\Numerical-Analysis\ChartLibrary\obj\Debug\net6.0-windows\ChartLibrary.AssemblyInfoInputs.cache
+C:\Users\Hetsu\Desktop\Numerical-Analysis\ChartLibrary\obj\Debug\net6.0-windows\ChartLibrary.AssemblyInfo.cs
+C:\Users\Hetsu\Desktop\Numerical-Analysis\ChartLibrary\obj\Debug\net6.0-windows\ChartLibrary.csproj.CoreCompileInputs.cache
+C:\Users\Hetsu\Desktop\Numerical-Analysis\ChartLibrary\obj\Debug\net6.0-windows\ChartLibrary.sourcelink.json
+C:\Users\Hetsu\Desktop\Numerical-Analysis\ChartLibrary\bin\Debug\net6.0-windows\ChartLibrary.deps.json
+C:\Users\Hetsu\Desktop\Numerical-Analysis\ChartLibrary\bin\Debug\net6.0-windows\ChartLibrary.dll
+C:\Users\Hetsu\Desktop\Numerical-Analysis\ChartLibrary\bin\Debug\net6.0-windows\ChartLibrary.pdb
+C:\Users\Hetsu\Desktop\Numerical-Analysis\ChartLibrary\obj\Debug\net6.0-windows\ChartLibrary.dll
+C:\Users\Hetsu\Desktop\Numerical-Analysis\ChartLibrary\obj\Debug\net6.0-windows\refint\ChartLibrary.dll
+C:\Users\Hetsu\Desktop\Numerical-Analysis\ChartLibrary\obj\Debug\net6.0-windows\ChartLibrary.pdb
+C:\Users\Hetsu\Desktop\Numerical-Analysis\ChartLibrary\obj\Debug\net6.0-windows\ref\ChartLibrary.dll

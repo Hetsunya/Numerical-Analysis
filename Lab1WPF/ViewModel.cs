@@ -351,8 +351,6 @@ namespace Lab1WPF
             LineSmoothness = 0
         }
             };
-
-            // Обновляем график
             OnPropertyChanged(nameof(Series));
         }
 
