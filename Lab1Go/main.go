@@ -1,127 +1,121 @@
+// words-0 is a simple graph-based program to find word ladders
+// between pairs of words in a dictionary. It uses graph node IDs
+// as indexes into the dictionary slice.
 package main
 
 import (
+	"bufio"
+	"flag"
 	"fmt"
-	"image/color"
 	"log"
-	"math"
-	"strconv"
+	"os"
+	"strings"
 
-	"fyne.io/fyne/v2/app"
-	"fyne.io/fyne/v2/container"
-	"fyne.io/fyne/v2/dialog"
-	"fyne.io/fyne/v2/widget"
-	"gonum.org/v1/plot"
-	"gonum.org/v1/plot/plotter"
-	"gonum.org/v1/plot/vg"
+	"gonum.org/v1/gonum/graph/path"
+	"gonum.org/v1/gonum/graph/simple"
 )
 
-type FunctionPlotter struct {
-	start  float64
-	end    float64
-	step   float64
-	function string
-}
-
-func NewFunctionPlotter(function string, start, end, step float64) *FunctionPlotter {
-	return &FunctionPlotter{
-		start:   start,
-		end:     end,
-		step:    step,
-		function: function,
-	}
-}
-
-func (fp *FunctionPlotter) GenerateData() (plotter.XYs, error) {
-	pts := plotter.XYs{}
-	step := fp.step
-	for x := fp.start; x <= fp.end; x += step {
-		y := evalFunction(fp.function, x)
-		pts = append(pts, plotter.XY{X: x, Y: y})
-	}
-	return pts, nil
-}
-
-func evalFunction(function string, x float64) float64 {
-	// Для простоты, используя math библиотеку для примера
-	switch function {
-	case "sin(x)":
-		return math.Sin(x)
-	case "cos(x)":
-		return math.Cos(x)
-	default:
-		return x // просто возвращаем x для любых других функций
-	}
-}
-
-func plotFunction(function string, start, end, step float64) {
-	fp := NewFunctionPlotter(function, start, end, step)
-	data, err := fp.GenerateData()
-	if err != nil {
-		log.Fatalf("Ошибка генерации данных: %v", err)
-	}
-
-	p, err := plot.New()
-	if err != nil {
-		log.Fatalf("Ошибка создания графика: %v", err)
-	}
-
-	p.Title.Text = "График функции"
-	p.X.Label.Text = "X"
-	p.Y.Label.Text = "Y"
-
-	line, err := plotter.NewLine(data)
-	if err != nil {
-		log.Fatalf("Ошибка создания линии: %v", err)
-	}
-	line.Color = color.RGBA{R: 255, G: 0, B: 0, A: 255} // Красный цвет
-
-	p.Add(line)
-	p.X.Min = start
-	p.X.Max = end
-	p.Y.Min = -1
-	p.Y.Max = 1
-
-	if err := p.Save(4*vg.Inch, 4*vg.Inch, "plot.png"); err != nil {
-		log.Fatalf("Ошибка сохранения графика: %v", err)
-	}
-
-	dialog.ShowInformation("График", "График сохранен как plot.png", a.Window())
-}
-
-var a = app.New()
-
 func main() {
-	w := a.NewWindow("Function Plotter")
+	first := flag.String("first", "aboba", "first word in word ladder (required - length must match last)")
+	last := flag.String("last", "abuba", "last word in word ladder (required - length must match first)")
+	flag.Parse()
 
-	functionEntry := widget.NewEntry()
-	functionEntry.SetPlaceHolder("Введите функцию (например: sin(x) или cos(x))")
+	if *first == "" || *last == "" || len(*first) != len(*last) {
+		flag.Usage()
+		os.Exit(2)
+	}
+	for _, p := range []*string{first, last} {
+		s := strings.ToLower(*p)
+		if !isWord(s) {
+			fmt.Fprintf(os.Stderr, "word must not contain punctuation or numerals: %q\n", *p)
+			os.Exit(2)
+		}
+		*p = s
+	}
 
-	startEntry := widget.NewEntry()
-	startEntry.SetPlaceHolder("Начало")
+	// Read in a list of unique words from the input stream.
+	// Include the first and last words in the ladder in case
+	// they do not exists in the dictionary.
+	words := map[string]int64{*first: 0, *last: 1}
+	sc := bufio.NewScanner(os.Stdin)
+	for sc.Scan() {
+		w := sc.Text()
+		if len(w) != len(*first) || !isWord(w) {
+			continue
+		}
+		w = strings.ToLower(w)
+		if _, exists := words[w]; exists {
+			continue
+		}
+		words[w] = int64(len(words))
+	}
+	if err := sc.Err(); err != nil {
+		log.Fatalf("failed to read word list: %v", err)
+	}
+	list := make([]string, len(words))
+	for w, id := range words {
+		list[id] = w
+	}
 
-	endEntry := widget.NewEntry()
-	endEntry.SetPlaceHolder("Конец")
+	// Construct a graph using Hamming distance one edges from
+	// list of words.
+	g := simple.NewUndirectedGraph()
+	for u, uid := range words {
+		for _, v := range neighbours(u, words) {
+			vid := words[v]
+			g.SetEdge(simple.Edge{F: simple.Node(uid), T: simple.Node(vid)})
+		}
+	}
 
-	stepEntry := widget.NewEntry()
-	stepEntry.SetPlaceHolder("Шаг")
+	// Find the shortest paths from the first word...
+	pth := path.DijkstraFrom(simple.Node(words[*first]), g)
+	// ,,, to the last word.
+	ladder, _ := pth.To(words[strings.ToLower(*last)])
 
-	plotButton := widget.NewButton("Построить график", func() {
-		start, _ := strconv.ParseFloat(startEntry.Text, 64)
-		end, _ := strconv.ParseFloat(endEntry.Text, 64)
-		step, _ := strconv.ParseFloat(stepEntry.Text, 64)
-		function := functionEntry.Text
+	// Print each step in the ladder.
+	for _, w := range ladder {
+		fmt.Println(list[w.ID()])
+	}
+}
 
-		plotFunction(function, start, end, step)
-	})
+// isWord returns whether s is entirely alphabetical.
+func isWord(s string) bool {
+	for _, c := range []byte(s) {
+		if lc(c) < 'a' || 'z' < lc(c) {
+			return false
+		}
+	}
+	return true
+}
 
-	w.SetContent(container.NewVBox(
-		functionEntry,
-		startEntry,
-		endEntry,
-		stepEntry,
-		plotButton,
-	))
+// lc returns the lower case of b.
+func lc(b byte) byte {
+	return b | 0x20
+}
 
-	w.ShowAndRun()
+// neighbours returns a slice of string of words in the words map
+// that are within Hamming distance one from the query word.
+func neighbours(word string, words map[string]int64) []string {
+	var adj []string
+	for j := range word {
+		for d := byte('a'); d <= 'z'; d++ {
+			b := make([]byte, len(word))
+			for i, c := range []byte(word) {
+				if i == j {
+					b[i] = d
+				} else {
+					b[i] = c
+				}
+			}
+			w := string(b)
+			if w != word {
+				if _, ok := words[w]; ok {
+					// We have found a neighbouring word so we
+					// can add it to our list of neighbours.
+					adj = append(adj, w)
+				}
+			}
+		}
+	}
+	return adj
 }
