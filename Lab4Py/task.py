@@ -1,52 +1,81 @@
 import numpy as np
 
 
-def read_data(filename):
+def read_data_from_file(filename):
+    """Читает матрицу A из текстового файла."""
     with open(filename, 'r') as file:
-        n = int(file.readline().strip())
-        A = []
-        b = []
-        for line in file:
-            values = list(map(float, line.strip().split()))
-            A.append(values[:-1])  # все элементы, кроме последнего
-            b.append(values[-1])  # последний элемент
-    return np.array(A), np.array(b)
+        lines = file.readlines()
+    n = int(lines[0].strip())
+    matrix = []
+    for line in lines[1:]:
+        matrix.append(list(map(float, line.split()[:-1])))  # Игнорируем столбец b
+    A = np.array(matrix)
+    return A, n
 
 
-def gauss_elimination(A, b):
-    n = len(b)
-    # Создаем расширенную матрицу
-    Ab = np.hstack((A, b.reshape(-1, 1)))
+def gaussian_determinant(A, n):
+    """Вычисляет определитель методом Гаусса с выбором ведущего элемента."""
+    det = 1
+    swap_count = 0  # Счётчик перестановок строк
+    logs = []  # Логи шагов вычисления
 
-    for i in range(n):
-        # Постолбцовый выбор ведущего элемента
-        max_row = np.argmax(np.abs(Ab[i:, i])) + i
-        Ab[[i, max_row]] = Ab[[max_row, i]]  # меняем местами строки
+    for k in range(n):
+        # Выбор ведущего элемента
+        max_row = max(range(k, n), key=lambda i: abs(A[i][k]))
+        logs.append(
+            f"Выбор ведущего элемента в столбце {k + 1}: max |A[{max_row + 1},{k + 1}]| = {abs(A[max_row][k]):.3f}")
 
-        # Прямой ход Гаусса
-        for j in range(i + 1, n):
-            factor = Ab[j, i] / Ab[i, i]
-            Ab[j, i:] -= factor * Ab[i, i:]
+        if A[max_row][k] == 0:
+            logs.append("Матрица вырожденная, определитель равен 0.")
+            return 0, logs
 
-    # Обратный ход
-    x = np.zeros(n)
-    for i in range(n - 1, -1, -1):
-        x[i] = (Ab[i, -1] - np.dot(Ab[i, i + 1:n], x[i + 1:n])) / Ab[i, i]
+        # Перестановка строк
+        if max_row != k:
+            A[[k, max_row]] = A[[max_row, k]]
+            swap_count += 1
+            det *= -1  # Меняем знак определителя при перестановке строк
+            logs.append(f"Перестановка строк {k + 1} и {max_row + 1}, смена знака определителя.")
 
-    return x
+        # Прямой ход
+        for i in range(k + 1, n):
+            factor = A[i][k] / A[k][k]
+            A[i, k:] -= factor * A[k, k:]
+            logs.append(f"Обновление строки {i + 1}: A[{i + 1}] -= ({factor:.3f}) * A[{k + 1}]")
+
+        # Умножаем на диагональный элемент
+        det *= A[k][k]
+        logs.append(f"Умножение определителя на диагональный элемент A[{k + 1},{k + 1}] = {A[k][k]:.3f}")
+        logs.append(f"Текущий определитель: {det:.3f}")
+
+        # Вывод текущего состояния
+        logs.append(f"Матрица после шага {k + 1}:\n{A}\n")
+
+    # Учет перестановок
+    formula = f"{' * '.join([f'A[{i + 1},{i + 1}]' for i in range(n)])} * (-1)^{swap_count}"
+    logs.append(f"Формула определителя: {formula}")
+    logs.append(f"Количество перестановок строк: {swap_count}")
+
+    return det, logs
 
 
-def main(filename):
-    A, b = read_data(filename)
-    print("Исходные данные:")
-    print("Матрица A:\n", A)
-    print("Вектор b:\n", b)
+def main():
+    filename = "data.txt"
+    try:
+        A, n = read_data_from_file(filename)
+        print("Исходная матрица A:")
+        print(A)
+        print("-" * 50)
 
-    solution = gauss_elimination(A, b)
-    print("Решение системы A~x = ~b:")
-    print("x =", solution)
+        det, logs = gaussian_determinant(A.copy(), n)
+
+        for log in logs:
+            print(log)
+
+        print("-" * 50)
+        print(f"Определитель матрицы: {det:.3f}")
+    except Exception as e:
+        print("Ошибка:", e)
 
 
 if __name__ == "__main__":
-    filename = 'data.txt'  # Укажите имя вашего файла
-    main(filename)
+    main()
