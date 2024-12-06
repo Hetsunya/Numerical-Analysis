@@ -31,15 +31,16 @@ def plot_iterations(iter_values):
     plt.show()
 
 # Метод простых итераций
-def simple_iteration_method(x0, eps=1e-5, max_iter=100):
+def simple_iteration_method(x0, eps=1e-6, max_iter=100):
     iter_values = [x0]
+
     print(f"Начальная точка: x0 = {x0:.6f}")
 
     for k in range(max_iter):
         x1 = g(x0)  # Следующая итерация
         iter_values.append(x1)
 
-        print(f"Итерация {k+1}: x = {x1:.6f}, f(x) = {f(x1):.6f}")
+        print(f"Итерация {k+1}: x = {x1:.6f}, f(x) = {f(x1):.6f}, g(x0) = {x1:.6f}")
 
         # Проверка на достижение точности
         if abs(x1 - x0) < eps:

@@ -59,7 +59,7 @@ def gaussian_determinant(A, n):
 
 
 def main():
-    filename = "lab4/data.txt"
+    filename = "data.txt"
     try:
         A, n = read_data_from_file(filename)
         print("Исходная матрица A:")

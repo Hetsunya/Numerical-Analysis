@@ -45,7 +45,7 @@ def relaxation_method(A, b, n, epsilon=1e-4, omega=0.5, max_iter=1000):
 
 # В main добавьте обработку столбца b:
 def main():
-    filename = "lab5/data.txt"
+    filename = "data.txt"
     try:
         A, b, n = read_data_from_file(filename)
         print("Исходная матрица A:")

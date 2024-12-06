@@ -1,20 +1,27 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+
+# График функции и запуск метода Ньютона
+x0 = 0.005  # Начальная точка
+epsilon = 1e-4
+h = 1e-5
+
+
 # Функция f(x)
 def f(x):
     return np.cos(np.sqrt(np.abs(x))) - x
 
 # Численная первая производная (разностный аналог)
-def f_prime_numeric(x, h=1e-6):
+def f_prime_numeric(x, h=1e-5):
     return (f(x + h) - f(x - h)) / (2 * h)
 
 # Численная вторая производная (разностный аналог)
-def f_double_prime_numeric(x, h=1e-6):
+def f_double_prime_numeric(x, h=1e-5):
     return (f(x + h) - 2 * f(x) + f(x - h)) / (h**2)
 
 # Метод Ньютона с визуализацией касательных
-def newton_method_numeric_with_visualization(x0, epsilon=1e-4, max_iter=100):
+def newton_method_numeric_with_visualization(x0, h=h, epsilon=1e-16, max_iter=100):
     x = x0
     x_vals = np.linspace(-10, 10, 1000)
     y_vals = f(x_vals)
@@ -30,9 +37,10 @@ def newton_method_numeric_with_visualization(x0, epsilon=1e-4, max_iter=100):
 
     for k in range(max_iter):
         fx = f(x)
-        fx_prime = f_prime_numeric(x)
-        fx_double_prime = f_double_prime_numeric(x)
+        fx_prime = f_prime_numeric(x, h)
+        fx_double_prime = f_double_prime_numeric(x, h)
 
+        print(f"x = {x}, f(x) = {f(x)}, fx_prime = {fx_prime}, fx_double_prime = {fx_double_prime}")
         # Проверка на малое значение производной
         if abs(fx_prime) < epsilon:
             break
@@ -46,7 +54,8 @@ def newton_method_numeric_with_visualization(x0, epsilon=1e-4, max_iter=100):
 
         # Итерационное обновление
         x_new = x - fx_prime / fx_double_prime
-        print(f"Итерация {k+1}: x = {x_new:.6f}, f(x) = {f(x_new):.6f}")
+        print(f" x_new = {x - fx_prime / fx_double_prime}")
+        print(f"    Итерация {k+1}: x_new = {x_new:.6f}, f(x) = {f(x_new):.6f}")
 
         # Построение касательной
         tangent_y_vals = fx + fx_prime * (x_vals - x)
@@ -65,10 +74,7 @@ def newton_method_numeric_with_visualization(x0, epsilon=1e-4, max_iter=100):
     plt.show()
     return x, max_iter, f(x), fx_prime
 
-# График функции и запуск метода Ньютона
-x0 = 0.6972  # Начальная точка
-epsilon = 1e-5
-result = newton_method_numeric_with_visualization(x0, epsilon)
+result = newton_method_numeric_with_visualization(x0=x0, h=h, epsilon=epsilon)
 
 # Вывод результата
 if result[0] is not None:
