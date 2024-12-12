@@ -40,7 +40,7 @@ def simple_iteration_method(x0, eps=1e-6, max_iter=100):
         x1 = g(x0)  # Следующая итерация
         iter_values.append(x1)
 
-        print(f"Итерация {k+1}: x = {x1:.6f}, f(x) = {f(x1):.6f}, g(x0) = {x1:.6f}")
+        print(f"Итерация {k+1}: x = {x0:.6f}, f(x) = {f(x1):.6f}, g(x0) = {x1:.6f}")
 
         # Проверка на достижение точности
         if abs(x1 - x0) < eps:

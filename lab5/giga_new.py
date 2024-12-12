@@ -11,7 +11,7 @@ def read_augmented_matrix(filename):
     return augmented_matrix, n
 
 
-def relaxation_method(A, b, n, omega=1.0, tol=1e-6, max_iter=10000):
+def relaxation_method(A, b, n, omega=1.0, tol=1e-17, max_iter=1000):
     """
     Решает СЛАУ методом релаксации.
     :param A: матрица коэффициентов (n x n)
@@ -23,7 +23,8 @@ def relaxation_method(A, b, n, omega=1.0, tol=1e-6, max_iter=10000):
     :return: решение системы или None, если решение не сходится
     """
     # Инициализация начального приближения (вектора нулей)
-    x = np.zeros(n)
+    # x = np.zeros(n)
+    x = np.random.rand(n)
 
     # Список для логов
     logs = []
@@ -62,7 +63,7 @@ def main():
         print(augmented_matrix)
         print("-" * 50)
 
-        solution, logs = relaxation_method(A, b, n, omega=1.2)  # omega = 1 для метода Якоби
+        solution, logs = relaxation_method(A, b, n, omega=1, tol=1e-6)
 
         for log in logs:
             print(log)

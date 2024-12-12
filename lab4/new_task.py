@@ -37,8 +37,12 @@ def gaussian_elimination_with_partial_pivoting(A, n):
     # Обратный ход
     x = np.zeros(n)
     for i in range(n - 1, -1, -1):
-        x[i] = (A[i, -1] - np.dot(A[i, i + 1:n], x[i + 1:n])) / A[i, i]
-        logs.append(f"Вычисление x[{i + 1}]: x[{i + 1}] = {x[i]:.3f}")
+        dot_product = np.dot(A[i, i + 1:n], x[i + 1:n])
+        x[i] = (A[i, -1] - dot_product) / A[i, i]
+        # logs.append(
+        #     f"Вычисление x[{i + 1}]: x[{i + 1}] = {x[i]:.3f}, "
+        #     f"A[i, -1] = {A[i, -1]:.3f}, dot_product = {dot_product:.3f}, A[i, i] = {A[i, i]:.3f}"
+        # )
 
     return x, logs
 

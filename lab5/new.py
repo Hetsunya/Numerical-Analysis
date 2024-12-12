@@ -9,7 +9,7 @@ def error_calc(X, xn):
 
 
 # Метод релаксаций
-def relax(A, B, start=0, eps=0.1, omega=0.1):
+def relax(A, B, start=0, eps=1e-6, omega=0.001):
     n = len(A)
     if start == 0 or len(start) != n:
         start = [0] * n  # Начальное приближение по умолчанию
@@ -51,7 +51,7 @@ A = np.array([
 B = np.array([10.5, 10.0, 2.0])
 
 # Решение с методом релаксаций
-X, iterations = relax(A, B, eps=1e-6, omega=0.1)
+X, iterations = relax(A, B, eps=1e-6, omega=1.5)
 
 # Выводим решения и количество итераций
 print(f"Решение после {iterations} итераций:")
