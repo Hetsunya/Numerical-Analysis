@@ -11,19 +11,18 @@ def read_augmented_matrix(filename):
     return augmented_matrix, n
 
 
-def relaxation_method(A, b, n, omega=1.0, tol=1e-17, max_iter=1000):
+def relaxation_method(A, b, n, omega=1.5, tol=1e-6, max_iter=1000):
     """
     Решает СЛАУ методом релаксации.
     :param A: матрица коэффициентов (n x n)
     :param b: вектор правых частей (n,)
     :param n: размерность системы
-    :param omega: параметр релаксации (1 - метод Якоби, <1 - подусиление, >1 - переусиление)
+    :param omega: параметр релаксации (>1 - надрелаксация, <1 - подрелаксация)
     :param tol: точность (когда изменение вектора решений становится меньше tol)
     :param max_iter: максимальное количество итераций
     :return: решение системы или None, если решение не сходится
     """
-    # Инициализация начального приближения (вектора нулей)
-    # x = np.zeros(n)
+    # Инициализация начального приближения (вектора случайных значений)
     x = np.random.rand(n)
 
     # Список для логов
@@ -33,7 +32,7 @@ def relaxation_method(A, b, n, omega=1.0, tol=1e-17, max_iter=1000):
         x_new = np.copy(x)  # Создаем копию текущего решения для обновлений
 
         for i in range(n):
-            # Вычисление нового значения для x_i по формуле метода релаксаций
+            # Вычисление нового значения для x_i по формуле метода релаксации
             sum1 = np.dot(A[i, :i], x[:i])  # Сумма по всем элементам до i
             sum2 = np.dot(A[i, i + 1:], x[i + 1:])  # Сумма по всем элементам после i
             x_new[i] = (1 - omega) * x[i] + omega * (b[i] - sum1 - sum2) / A[i, i]
@@ -52,6 +51,46 @@ def relaxation_method(A, b, n, omega=1.0, tol=1e-17, max_iter=1000):
     return None, logs
 
 
+def validate_solution(A, b, x, tol=1e-6):
+    """
+    Проверяет, является ли найденное решение корректным.
+    :param A: матрица коэффициентов
+    :param b: вектор правых частей
+    :param x: предполагаемое решение
+    :param tol: допустимая погрешность
+    :return: (is_valid, residual, logs) - корректность решения, общий остаток и логи проверки
+    """
+    logs = []
+    n = len(b)
+    residual = np.linalg.norm(np.dot(A, x) - b, ord=np.inf)  # Общий остаток
+
+    logs.append(f"Общий остаток: {residual:.2e}")
+
+    # Проверка каждого уравнения
+    for i in range(n):
+        left_side = np.dot(A[i], x)  # Левая часть уравнения
+        right_side = b[i]  # Правая часть уравнения
+        difference = abs(left_side - right_side)
+
+        log = (f"Уравнение {i + 1}: "
+               f"левая часть = {left_side:.6f}, "
+               f"правая часть = {right_side:.6f}, "
+               f"разница = {difference:.2e}")
+
+        logs.append(log)
+
+        # if difference >= tol:
+        #     logs.append(f"Уравнение {i + 1} НЕ удовлетворяется (разница {difference:.2e} >= {tol}).")
+        # else:
+        #     logs.append(f"Уравнение {i + 1} удовлетворяется (разница {difference:.2e} < {tol}).")
+
+    # Итоговая корректность
+    is_valid = residual < tol
+    logs.append("Решение корректно." if is_valid else "Решение некорректно.")
+
+    return is_valid, residual, logs
+
+
 def main():
     filename = "data.txt"
     try:
@@ -63,7 +102,7 @@ def main():
         print(augmented_matrix)
         print("-" * 50)
 
-        solution, logs = relaxation_method(A, b, n, omega=1, tol=1e-6)
+        solution, logs = relaxation_method(A, b, n, omega=0.1, tol=1e-6)
 
         for log in logs:
             print(log)
@@ -71,6 +110,16 @@ def main():
         if solution is not None:
             print("-" * 50)
             print(f"Решение СЛАУ: {solution}")
+
+            # Проверка решения
+            is_valid, residual, validation_logs = validate_solution(A, b, solution)
+            for log in validation_logs:
+                print(log)
+            #
+            # if is_valid:
+            #     print(f"Решение проверено и корректно. Остаток: {residual:.2e}")
+            # else:
+            #     print(f"Решение некорректно. Остаток: {residual:.2e}")
         else:
             print("Система не имеет решения или не сошлась.")
     except Exception as e:
