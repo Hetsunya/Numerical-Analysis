@@ -12,6 +12,10 @@ h = 1e-5
 def f(x):
     return np.cos(np.sqrt(np.abs(x))) - x
 
+
+# def f(x):
+#     return x + 2 * np.sin(x) + np.cos(3 * x)
+
 # Численная первая производная (разностный аналог)
 def f_prime_numeric(x, h=1e-5):
     return (f(x + h) - f(x - h)) / (2 * h)
@@ -21,9 +25,9 @@ def f_double_prime_numeric(x, h=1e-5):
     return (f(x + h) - 2 * f(x) + f(x - h)) / (h**2)
 
 # Метод Ньютона с визуализацией касательных
-def newton_method_numeric_with_visualization(x0, h=h, epsilon=1e-16, max_iter=100):
+def newton_method_numeric_with_visualization(x0, h=h, epsilon=1e-6, max_iter=1000):
     x = x0
-    x_vals = np.linspace(-10, 10, 1000)
+    x_vals = np.linspace(-100, 100, 1000)
     y_vals = f(x_vals)
     
     plt.figure(figsize=(10, 6))
@@ -74,7 +78,7 @@ def newton_method_numeric_with_visualization(x0, h=h, epsilon=1e-16, max_iter=10
     plt.show()
     return x, max_iter, f(x), fx_prime
 
-result = newton_method_numeric_with_visualization(x0=x0, h=h, epsilon=epsilon)
+result = newton_method_numeric_with_visualization(x0=1, h=h, epsilon=epsilon)
 
 # Вывод результата
 if result[0] is not None:
