@@ -8,7 +8,7 @@ def f(x):
 def analytical_derivative(x):
     sqrt_abs_x = np.sqrt(np.abs(x))
     derivative_part = np.sin(sqrt_abs_x) / (2 * sqrt_abs_x) if x != 0 else 0
-    return -derivative_part - 1
+    return derivative_part - 1
 
 # Численная производная (2-й порядок точности)
 def first_derivative_2nd_order(f, x, h):

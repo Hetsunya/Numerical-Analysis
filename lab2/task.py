@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from sympy import *
 
 # Определение функции
 def f(x):
@@ -11,7 +12,7 @@ def g(x):
 
 # Построение графика с итерациями
 def plot_iterations(iter_values):
-    x_vals = np.linspace(-1, 1, 1000)
+    x_vals = np.linspace(-1, 1, 10000)
     y_vals = f(x_vals)
 
     plt.plot(x_vals, y_vals, label='f(x) = cos(sqrt(|x|)) - x', color='blue')
@@ -32,19 +33,19 @@ def plot_iterations(iter_values):
 
 # Метод простых итераций
 def simple_iteration_method(x0, eps=1e-6, max_iter=100):
-    iter_values = [x0]
+    iter_values = []
 
     print(f"Начальная точка: x0 = {x0:.6f}")
 
     for k in range(max_iter):
         x1 = g(x0)  # Следующая итерация
-        iter_values.append(x1)
 
         print(f"Итерация {k+1}: x = {x0:.6f}, f(x) = {f(x1):.6f}, g(x0) = {x1:.6f}")
 
         # Проверка на достижение точности
         if abs(x1 - x0) < eps:
             print(f"Решение найдено: x = {x1:.6f}, f(x) = {f(x1):.6f}, количество итераций = {k+1}, точность = {eps}")
+            iter_values.append(x1)
             plot_iterations(iter_values)
             return x1, k+1
 
@@ -55,5 +56,5 @@ def simple_iteration_method(x0, eps=1e-6, max_iter=100):
     return None, max_iter
 
 # Начальная точка и вызов метода
-x0 = 0.5  # Начальная точка
+x0 = 0.0  # Начальная точка
 simple_iteration_method(x0)

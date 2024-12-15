@@ -3,18 +3,20 @@ import matplotlib.pyplot as plt
 
 
 # График функции и запуск метода Ньютона
-x0 = 1e-5  # Начальная точка
-epsilon = 1e-4
-h = 1e-5
+x0 = -8  # Начальная точка
+epsilon = 1e-6
+h = 1e-6
 
 
 # Функция f(x)
 def f(x):
     return np.cos(np.sqrt(np.abs(x))) - x
 
-
 # def f(x):
 #     return x + 2 * np.sin(x) + np.cos(3 * x)
+
+def f_numeric(x, h=1e-5):
+    return (f(x + h) - f(x)) / h
 
 # Численная первая производная (разностный аналог)
 def f_prime_numeric(x, h=1e-5):
@@ -25,11 +27,11 @@ def f_double_prime_numeric(x, h=1e-5):
     return (f(x + h) - 2 * f(x) + f(x - h)) / (h**2)
 
 # Метод Ньютона с визуализацией касательных
-def newton_method_numeric_with_visualization(x0, h=h, epsilon=1e-6, max_iter=1000):
+def newton_method_numeric_with_visualization(x0, h=h, epsilon=1e-5, max_iter=100):
     x = x0
-    x_vals = np.linspace(-100, 100, 1000)
+    x_vals = np.linspace(-10, 10, 1000)
     y_vals = f(x_vals)
-    
+
     plt.figure(figsize=(10, 6))
     plt.plot(x_vals, y_vals, label="f(x) = cos(sqrt(|x|)) - x", color="blue")
     plt.axhline(0, color='black', linestyle='--', linewidth=0.5)
@@ -41,9 +43,12 @@ def newton_method_numeric_with_visualization(x0, h=h, epsilon=1e-6, max_iter=100
 
     for k in range(max_iter):
         fx = f(x)
+        print(x)
+        fx_numeric = f_numeric(x, h)
         fx_prime = f_prime_numeric(x, h)
         fx_double_prime = f_double_prime_numeric(x, h)
 
+        print(f"итерация {k}")
         print(f"x = {x}, f(x) = {f(x)}, fx_prime = {fx_prime}, fx_double_prime = {fx_double_prime}")
         # Проверка на малое значение производной
         if abs(fx_prime) < epsilon:
@@ -59,7 +64,10 @@ def newton_method_numeric_with_visualization(x0, h=h, epsilon=1e-6, max_iter=100
         # Итерационное обновление
         x_new = x - fx_prime / fx_double_prime
         print(f" x_new = {x - fx_prime / fx_double_prime}")
-        print(f"    Итерация {k+1}: x_new = {x_new:.6f}, f(x) = {f(x_new):.6f}")
+        #
+        # x_new = x - fx_numeric / fx_prime
+        # print(f"x new = {x - fx_numeric / fx_prime}")
+        # print(f"    Итерация {k+1}: x_new = {x_new:.6f}, f(x) = {f(x_new):.6f}")
 
         # Построение касательной
         tangent_y_vals = fx + fx_prime * (x_vals - x)
@@ -78,7 +86,7 @@ def newton_method_numeric_with_visualization(x0, h=h, epsilon=1e-6, max_iter=100
     plt.show()
     return x, max_iter, f(x), fx_prime
 
-result = newton_method_numeric_with_visualization(x0=1, h=h, epsilon=epsilon)
+result = newton_method_numeric_with_visualization(x0=x0, h=h, epsilon=epsilon)
 
 # Вывод результата
 if result[0] is not None:
