@@ -3,17 +3,17 @@ import matplotlib.pyplot as plt
 
 
 # График функции и запуск метода Ньютона
-x0 = 0 # Начальная точка
+x0 = -1.25 # Начальная точка
 epsilon = 1e-6
 # h = 1e-2
 h= 0.005
 
 # Функция f(x)
-def f(x):
-    return np.cos(np.sqrt(np.abs(x))) - x
-
 # def f(x):
-#     return x + 2 * np.sin(x) + np.cos(3 * x)
+#     return np.cos(np.sqrt(np.abs(x))) - x
+
+def f(x):
+    return x + 2 * np.sin(x) + np.cos(3 * x)
 
 def f_numeric(x, h=1e-5):
     return (f(x + h) - f(x)) / h
