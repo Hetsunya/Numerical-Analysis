@@ -3,10 +3,10 @@ import matplotlib.pyplot as plt
 
 
 # График функции и запуск метода Ньютона
-x0 = -8  # Начальная точка
+x0 = 0 # Начальная точка
 epsilon = 1e-6
-h = 1e-6
-
+# h = 1e-2
+h= 0.005
 
 # Функция f(x)
 def f(x):
@@ -29,7 +29,7 @@ def f_double_prime_numeric(x, h=1e-5):
 # Метод Ньютона с визуализацией касательных
 def newton_method_numeric_with_visualization(x0, h=h, epsilon=1e-5, max_iter=100):
     x = x0
-    x_vals = np.linspace(-10, 10, 1000)
+    x_vals = np.linspace(-10, 10, 10000)
     y_vals = f(x_vals)
 
     plt.figure(figsize=(10, 6))

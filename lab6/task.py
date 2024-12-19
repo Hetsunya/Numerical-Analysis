@@ -8,14 +8,20 @@ N = 15   # число узлов (можно варьировать)
 
 # Исходная функция
 def f(x):
-    return np.cos(np.sqrt(np.abs(x))) - x
+    return np.float64(np.cos(np.sqrt(np.abs(x))) - x)
 
 # def f(x):
 #     return x + 2 * np.sin(x) + np.cos(3 * x)
 # Узловые точки
 
-x_nodes = np.linspace(a, b, N)
+# x_nodes = np.linspace(a, b, N)
+x_nodes = np.linspace(np.float64(a), np.float64(b), N)
+print(x_nodes)
+# x_nodes[np.argmin(np.abs(x_nodes))] = 1e-26
+# print(x_nodes)
 y_nodes = f(x_nodes)
+print(y_nodes)
+
 
 # Функция для построения кубического сплайна
 def cubic_spline(x, x_nodes, y_nodes):
@@ -69,10 +75,10 @@ def cubic_spline(x, x_nodes, y_nodes):
         dx = x[idx] - x_nodes[i]
         spline_values[idx] = a[i] + b[i] * dx + c[i] * dx**2 + d[i] * dx**3
     spline_values[x == x_nodes[-1]] = y_nodes[-1]  # Последняя точка
-    return spline_values
+    return np.float64(spline_values)
 
 # Точки для построения графика
-x_dense = np.linspace(a, b, 1000)
+x_dense = np.linspace(np.float64(a), np.float64(b), 600000)
 y_dense = f(x_dense)
 y_spline = cubic_spline(x_dense, x_nodes, y_nodes)
 

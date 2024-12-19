@@ -7,8 +7,17 @@ def f(x):
     return np.cos(np.sqrt(np.abs(x))) - x
 
 # Итерационная функция g(x) для метода простых итераций
+# def g(x):
+#     return np.cos(np.sqrt(np.abs(x)))
+
+# # Итерационная функция g(x) для метода простых итераций
+# def g(x):
+#     return np.cos(x)
+
 def g(x):
-    return np.cos(np.sqrt(np.abs(x)))
+    return (np.cos(np.sqrt(np.abs(x))) + x) / 2
+
+
 
 # Построение графика с итерациями
 def plot_iterations(iter_values):
@@ -32,7 +41,7 @@ def plot_iterations(iter_values):
     plt.show()
 
 # Метод простых итераций
-def simple_iteration_method(x0, eps=1e-6, max_iter=100):
+def simple_iteration_method(x0, eps=1e-6, max_iter=1000):
     iter_values = []
 
     print(f"Начальная точка: x0 = {x0:.6f}")
