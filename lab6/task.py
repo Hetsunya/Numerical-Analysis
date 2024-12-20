@@ -4,11 +4,14 @@ import matplotlib.pyplot as plt
 # Раздел констант
 a = -10  # начальная точка интервала
 b = 10   # конечная точка интервала
-N = 15   # число узлов (можно варьировать)
+N = 3   # число узлов (можно варьировать)
 
 # Исходная функция
 def f(x):
     return np.float64(np.cos(np.sqrt(np.abs(x))) - x)
+
+# def f(x):
+#     return np.float64(np.cos(x) - x)
 
 # def f(x):
 #     return x + 2 * np.sin(x) + np.cos(3 * x)
@@ -17,11 +20,13 @@ def f(x):
 # x_nodes = np.linspace(a, b, N)
 x_nodes = np.linspace(np.float64(a), np.float64(b), N)
 print(x_nodes)
-# x_nodes[np.argmin(np.abs(x_nodes))] = 1e-26
-# print(x_nodes)
+
 y_nodes = f(x_nodes)
 print(y_nodes)
 
+
+print(f"Узловая точка около 0: x_nodes[np.argmin(np.abs(x_nodes))] = {x_nodes[np.argmin(np.abs(x_nodes))]}")
+print(f"Соответствующее значение: f(x) = {f(x_nodes[np.argmin(np.abs(x_nodes))])}")
 
 # Функция для построения кубического сплайна
 def cubic_spline(x, x_nodes, y_nodes):

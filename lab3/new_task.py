@@ -45,7 +45,7 @@ def newton_method_with_plot(x0, epsilon=1e-6, max_iter=100):
     return x, k + 1, trajectory
 
 
-x_vals = np.linspace(-10, 10, 10000)
+x_vals = np.linspace(-10, 10, 100000)
 y_vals = f(x_vals)
 
 x0 = 6
