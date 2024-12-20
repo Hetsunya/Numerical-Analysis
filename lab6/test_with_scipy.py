@@ -6,8 +6,8 @@ from scipy.interpolate import CubicSpline
 
 ##
 # Раздел констант
-a = -10  # начальная точка интервала
-b = 10  # конечная точка интервала
+a = -6  # начальная точка интервала
+b = 6  # конечная точка интервала
 N = 3 # число узлов (можно варьировать)
 
 # Исходная функция
@@ -22,7 +22,7 @@ y_nodes = f(x_nodes)
 spline = CubicSpline(x_nodes, y_nodes)
 
 # Точки для построения графика
-x_dense = np.linspace(a, b, 1000)
+x_dense = np.linspace(a, b, 5999999)
 y_dense = f(x_dense)
 y_spline = spline(x_dense)
 

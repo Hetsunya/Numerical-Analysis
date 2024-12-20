@@ -2,23 +2,23 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # Раздел констант
-a = -6  # начальная точка интервала
-b = 6   # конечная точка интервала
+a = -10  # начальная точка интервала
+b = 10   # конечная точка интервала
 N = 5  # число узлов (можно варьировать)
 
 # Исходная функция
 def f(x):
     return np.float64(np.cos(np.sqrt(np.abs(x))) - x)
 
-# def f(x):
-#     return np.float64(np.cos(x) - x)
+# Точки для построения графика (густая сетка)
+x_dense = np.linspace(np.float64(a), np.float64(b), 1000000)
+y_dense = f(x_dense)
 
-# def f(x):
-#     return x + 2 * np.sin(x) + np.cos(3 * x)
-
-# x_nodes = np.linspace(a, b, N)
+# Узловые точки
 x_nodes = np.linspace(np.float64(a), np.float64(b), N)
-y_nodes = f(x_nodes)
+
+# Узловые значения
+y_nodes = np.array([y_dense[np.argmin(np.abs(x_dense - x))] for x in x_nodes])
 
 # Функция для построения кубического сплайна
 def cubic_spline(x, x_nodes, y_nodes):
@@ -64,7 +64,6 @@ def cubic_spline(x, x_nodes, y_nodes):
         print(
             f"  Формула: S_{j}(x) = {a[j]:.4f} + {b[j]:.4f}*(x - {x_nodes[j]:.4f}) + {c[j]:.4f}*(x - {x_nodes[j]:.4f})^2 + {d[j]:.4f}*(x - {x_nodes[j]:.4f})^3")
 
-
     # Построение значения сплайна
     spline_values = np.zeros_like(x)
     for i in range(n):
@@ -74,9 +73,7 @@ def cubic_spline(x, x_nodes, y_nodes):
     spline_values[x == x_nodes[-1]] = y_nodes[-1]  # Последняя точка
     return np.float64(spline_values)
 
-# Точки для построения графика
-x_dense = np.linspace(np.float64(a), np.float64(b), 3999999)
-y_dense = f(x_dense)
+# Построение сплайна
 y_spline = cubic_spline(x_dense, x_nodes, y_nodes)
 
 # Построение графиков
@@ -86,7 +83,7 @@ plt.plot(x_dense, y_spline, label="Кубический сплайн", color="re
 plt.scatter(x_nodes, y_nodes, color="black", label="Узловые точки", zorder=5)
 
 # Настройки графика
-plt.title("Кубическая интерполяция сплайном")
+plt.title("Кубическая интерполяция сплайном (с выводом информации)")
 plt.xlabel("x")
 plt.ylabel("y")
 plt.legend()

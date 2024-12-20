@@ -26,9 +26,6 @@ def newton_method_with_plot(x0, epsilon=1e-6, max_iter=100):
         f_prime_val = f_prime(x)
         f_double_prime_val = f_double_prime(x)
 
-        if abs(f_prime_val) < epsilon:
-            break
-
         if f_double_prime_val == 0:
             print("Вторая производная равна нулю. Метод не может продолжаться.")
             return None, k, trajectory
@@ -45,10 +42,10 @@ def newton_method_with_plot(x0, epsilon=1e-6, max_iter=100):
     return x, k + 1, trajectory
 
 
-x_vals = np.linspace(-10, 10, 100000)
+x_vals = np.linspace(-10, 10, 10000)
 y_vals = f(x_vals)
 
-x0 = 6
+x0 = 0.5
 epsilon = 1e-4
 
 extremum, iterations, trajectory = newton_method_with_plot(x0, epsilon)
