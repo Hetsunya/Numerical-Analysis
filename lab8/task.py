@@ -27,9 +27,9 @@ a, b = -10, 10  # Пределы интегрирования
 n = 5  # Начальное число разбиений
 
 # Вычисление интегралов для n, 2n и 4n разбиений
-I_n = rectangle_method(a, b, n, method='mid')
-I_2n = rectangle_method(a, b, 2 * n, method='mid')
-I_4n = rectangle_method(a, b, 4 * n, method='mid')
+I_n = rectangle_method(a, b, n, method='left')
+I_2n = rectangle_method(a, b, 2 * n, method='left')
+I_4n = rectangle_method(a, b, 4 * n, method='left')
 
 # Оценка точности по Эйткену
 I_aitken = aitken_extrapolation(I_n, I_2n, I_4n)

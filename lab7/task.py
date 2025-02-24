@@ -6,9 +6,10 @@ def f(x):
     return np.cos(np.sqrt(np.abs(x))) - x
 
 def analytical_derivative(x):
-    sqrt_abs_x = np.sqrt(np.abs(x))
-    derivative_part = np.sin(sqrt_abs_x) / (2 * sqrt_abs_x) if x != 0 else 0
-    return derivative_part - 1
+    sqrt_abs_value = np.sqrt(np.abs(x))
+    # Если x = 0, то возвращаем NaN, иначе вычисляем производную
+    derivative_part = np.sin(sqrt_abs_value) / (2 * sqrt_abs_value) if x != 0 else np.nan
+    return -derivative_part * np.sign(x) - 1
 
 # Численная производная (2-й порядок точности)
 def first_derivative_2nd_order(f, x, h):
